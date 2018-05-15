@@ -2,10 +2,10 @@ package gr.gnostix.kafka.connect.asterisk.source;
 
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
-import org.asteriskjava.manager.ManagerConnection;
-import org.asteriskjava.manager.ManagerConnectionFactory;
-import org.asteriskjava.manager.ManagerEventListener;
+import org.asteriskjava.manager.*;
+import org.asteriskjava.manager.event.CdrEvent;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +41,22 @@ public class AsteriskAmiSourceTask extends SourceTask {
         this.managerConnection.addEventListener(eventListener);
         this.managerConnection = getManagerConnection(astIpAddress, astUsername, astPassword);
 
+        managerLogin();
+
     }
+
+    private void managerLogin() {
+        try {
+            this.managerConnection.login("log");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (AuthenticationFailedException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public List<SourceRecord> poll() throws InterruptedException {
