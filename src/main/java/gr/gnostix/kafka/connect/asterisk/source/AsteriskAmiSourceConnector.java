@@ -22,23 +22,26 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
     public static String AST_USERNAME = "admin";
     public static String AST_PASSWORD = "pass";
     public static String AST_EVENT = "CdrEvent";
+    public static String BATCH_SIZE = "1000";
+
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server ip address")
             .define(AST_USERNAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI username")
             .define(AST_PASSWORD, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI password")
             .define(AST_EVENT, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI event to source")
-            .define(TOPIC_NAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka topic to push the data");
+            .define(TOPIC_NAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka topic to push the data")
+            .define(BATCH_SIZE, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka batch size to push to topic");
     private String topic;
     private String astIpAddress;
     private String astUsername;
     private String astPassword;
     private String astEvent;
+    private String batchSize;
     private ManagerConnection managerConnection;
 
     static void forceIpV4(String astIpAddress) {
 
     }
-
 
 
     @Override
@@ -54,6 +57,7 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
 //        astUsername = forceIpV4(props.get(AST_USERNAME));
         astPassword = props.get(AST_PASSWORD);
         astEvent = props.get(AST_PASSWORD);
+        batchSize = props.get(BATCH_SIZE);
     }
 
     @Override
@@ -71,6 +75,7 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
         config.put(AST_USERNAME, astUsername);
         config.put(AST_PASSWORD, astPassword);
         config.put(AST_EVENT, astEvent);
+        config.put(BATCH_SIZE, batchSize);
 
         configs.add(config);
 
