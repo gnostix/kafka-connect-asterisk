@@ -17,12 +17,12 @@ import java.util.Map;
  */
 public class AsteriskAmiSourceConnector extends SourceConnector {
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceConnector.class);
-    public static String TOPIC_NAME = "asterisk-topic";
-    public static String AST_IP_ADDRESS = "127.0.0.1";
-    public static String AST_USERNAME = "admin";
-    public static String AST_PASSWORD = "pass";
-    public static String AST_EVENT = "CdrEvent";
-    public static String BATCH_SIZE = "1000";
+    public static String TOPIC_NAME = "asterisk.topic";
+    public static String AST_IP_ADDRESS = "ip.address";
+    public static String AST_USERNAME = "username";
+    public static String AST_PASSWORD = "password";
+    public static String AST_EVENT = "asterisk.event";
+    public static String BATCH_SIZE = "batch.size";
 
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server ip address")
