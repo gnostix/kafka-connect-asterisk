@@ -75,6 +75,8 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
         config.put(AST_USERNAME, astUsername);
         config.put(AST_PASSWORD, astPassword);
         config.put(AST_EVENTS, astEvent);
+
+        validateNumber(batchSize);
         config.put(BATCH_SIZE, batchSize);
 
         configs.add(config);
@@ -85,6 +87,15 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
     @Override
     public void stop() {
 
+    }
+
+    private boolean validateNumber(String number) {
+        try {
+            Integer.parseInt(number);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     @Override
