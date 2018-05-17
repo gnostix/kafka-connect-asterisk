@@ -3,8 +3,9 @@ package gr.gnostix.kafka.connect.asterisk.source;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.asteriskjava.manager.*;
-import org.asteriskjava.manager.event.CdrEvent;
 import org.asteriskjava.manager.event.ManagerEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ import java.util.Map;
  * Created by gnostix on 15/5/2018.
  */
 public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventListener {
-
+    private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceTask.class);
+    ArrayList<SourceRecord> records = new ArrayList<>();
     private ManagerConnection managerConnection;
     private String topic;
     private String astIpAddress;
@@ -23,8 +25,7 @@ public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventLis
     private String astPassword;
     private String astEvent;
     private ManagerEventListener eventListener;
-    private int batchSize = 1000;
-    ArrayList<SourceRecord> records = null;
+    private int batchSize;
 
     @Override
     public String version() {
@@ -37,11 +38,12 @@ public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventLis
         this.astIpAddress = props.get(AsteriskAmiSourceConnector.AST_IP_ADDRESS);
         this.astUsername = props.get(AsteriskAmiSourceConnector.AST_USERNAME);
         this.astPassword = props.get(AsteriskAmiSourceConnector.AST_PASSWORD);
-        this.astEvent = props.get(AsteriskAmiSourceConnector.AST_EVENT);
-
-
-        this.managerConnection.addEventListener(eventListener);
+        this.astEvent = props.get(AsteriskAmiSourceConnector.AST_EVENTS);
+        this.batchSize = Integer.valueOf(props.get(AsteriskAmiSourceConnector.BATCH_SIZE));
         this.managerConnection = getManagerConnection(astIpAddress, astUsername, astPassword);
+
+//        this.eventListener = new AsteriskAmiCdrEvents();
+        this.managerConnection.addEventListener(this);
 
         managerLogin();
 
@@ -49,7 +51,7 @@ public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventLis
 
     private void managerLogin() {
         try {
-            this.managerConnection.login();
+            this.managerConnection.login("cdr");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (AuthenticationFailedException e) {
@@ -61,7 +63,11 @@ public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventLis
 
 
     public List<SourceRecord> poll() throws InterruptedException {
-        return getRecords();
+
+        if (records.size() >= batchSize)
+            return getRecords();
+
+        return new ArrayList<>();
     }
 
     @Override
@@ -80,23 +86,24 @@ public class AsteriskAmiSourceTask extends SourceTask implements ManagerEventLis
 
     @Override
     public void onManagerEvent(ManagerEvent event) {
+        logger.info(event.toString());
+
         SourceRecord record = new SourceRecord(null, null, topic, null, null, null,
-                null, event.getDateReceived().toString(), System.currentTimeMillis());
+                null, event.toString(), System.currentTimeMillis());
+
+        logger.info("record -------> " + record.toString());
+
+
+        logger.info("recordssss -------> " + records.size());
+        logger.info("batchSize -------> " + batchSize);
         records.add(record);
 
-        if (records.size() >= batchSize) {
-            try {
-                poll();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 
-    public synchronized List<SourceRecord> getRecords(){
+    public synchronized List<SourceRecord> getRecords() {
         ArrayList<SourceRecord> recs = this.records;
-        this.records = null;
+        this.records = new ArrayList<>();
 
         return recs;
     }

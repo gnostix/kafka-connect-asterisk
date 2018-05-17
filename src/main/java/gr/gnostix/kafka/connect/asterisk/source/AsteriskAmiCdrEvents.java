@@ -15,10 +15,10 @@ public class AsteriskAmiCdrEvents implements ManagerEventListener {
     private List<SourceRecord> records;
     private int batchSize;
 
-    public AsteriskAmiCdrEvents(List<SourceRecord> records, int batchSize){
+  /*  public AsteriskAmiCdrEvents(List<SourceRecord> records, int batchSize){
         this.records = records;
         this.batchSize = batchSize;
-    }
+    }*/
 
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceConnector.class);
 

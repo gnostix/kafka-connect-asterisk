@@ -18,17 +18,17 @@ import java.util.Map;
 public class AsteriskAmiSourceConnector extends SourceConnector {
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceConnector.class);
     public static String TOPIC_NAME = "asterisk.topic";
-    public static String AST_IP_ADDRESS = "ip.address";
-    public static String AST_USERNAME = "username";
-    public static String AST_PASSWORD = "password";
-    public static String AST_EVENT = "asterisk.event";
+    public static String AST_IP_ADDRESS = "asterisk.ipaddress";
+    public static String AST_USERNAME = "asterisk.username";
+    public static String AST_PASSWORD = "asterisk.password";
+    public static String AST_EVENTS = "asterisk.events";
     public static String BATCH_SIZE = "batch.size";
 
     private static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server ip address")
             .define(AST_USERNAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI username")
             .define(AST_PASSWORD, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI password")
-            .define(AST_EVENT, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI event to source")
+            .define(AST_EVENTS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI event to source")
             .define(TOPIC_NAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka topic to push the data")
             .define(BATCH_SIZE, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka batch size to push to topic");
     private String topic;
@@ -74,7 +74,7 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
         config.put(AST_IP_ADDRESS, astIpAddress);
         config.put(AST_USERNAME, astUsername);
         config.put(AST_PASSWORD, astPassword);
-        config.put(AST_EVENT, astEvent);
+        config.put(AST_EVENTS, astEvent);
         config.put(BATCH_SIZE, batchSize);
 
         configs.add(config);
