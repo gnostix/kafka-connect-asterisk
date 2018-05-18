@@ -1,6 +1,7 @@
 package gr.gnostix.kafka.connect.asterisk.source;
 
 import gr.gnostix.kafka.connect.asterisk.config.AsteriskAmiConnectorConfig;
+import gr.gnostix.kafka.connect.asterisk.config.Version;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.asteriskjava.manager.*;
@@ -30,7 +31,7 @@ public class AsteriskAmiSourceTask extends SourceTask {
 
     @Override
     public String version() {
-        return null;
+        return Version.getVersion();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class AsteriskAmiSourceTask extends SourceTask {
         ArrayList<SourceRecord> records = new ArrayList<>();
         for (int i = 0; i <= batchSize; i++) {
             records.add(queueRecords.poll());
-            logger.info(" queueRecords.poll() " + queueRecords.size());
+            logger.debug(" queueRecords.poll() " + queueRecords.size());
         }
 
         return records;

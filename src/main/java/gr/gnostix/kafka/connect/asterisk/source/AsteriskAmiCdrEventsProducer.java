@@ -27,7 +27,7 @@ public class AsteriskAmiCdrEventsProducer implements ManagerEventListener {
         queueRecords.add(record);
 
         // just print received events
-        logger.info("--->logger " + event.toString());
+        logger.debug(AsteriskAmiCdrEventsProducer.class.toString(), event.toString());
 
     }
 

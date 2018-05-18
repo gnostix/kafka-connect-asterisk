@@ -1,6 +1,7 @@
 package gr.gnostix.kafka.connect.asterisk.source;
 
 import gr.gnostix.kafka.connect.asterisk.config.AsteriskAmiConnectorConfig;
+import gr.gnostix.kafka.connect.asterisk.config.Version;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
@@ -24,7 +25,7 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
 
     @Override
     public String version() {
-        return null;
+        return Version.getVersion();
     }
 
     @Override
