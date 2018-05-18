@@ -1,5 +1,6 @@
 package gr.gnostix.kafka.connect.asterisk.source;
 
+import gr.gnostix.kafka.connect.asterisk.config.AsteriskAmiConnectorConfig;
 import org.apache.kafka.connect.source.SourceRecord;
 import org.apache.kafka.connect.source.SourceTask;
 import org.asteriskjava.manager.*;
@@ -34,12 +35,12 @@ public class AsteriskAmiSourceTask extends SourceTask {
 
     @Override
     public void start(Map<String, String> props) {
-        this.topic = props.get(AsteriskAmiSourceConnector.TOPIC_NAME);
-        this.astIpAddress = props.get(AsteriskAmiSourceConnector.AST_IP_ADDRESS);
-        this.astUsername = props.get(AsteriskAmiSourceConnector.AST_USERNAME);
-        this.astPassword = props.get(AsteriskAmiSourceConnector.AST_PASSWORD);
-        this.astEvent = props.get(AsteriskAmiSourceConnector.AST_EVENTS);
-        this.batchSize = Integer.valueOf(props.get(AsteriskAmiSourceConnector.BATCH_SIZE));
+        this.topic = props.get(AsteriskAmiConnectorConfig.TOPIC_NAME);
+        this.astIpAddress = props.get(AsteriskAmiConnectorConfig.AST_IP_ADDRESS);
+        this.astUsername = props.get(AsteriskAmiConnectorConfig.AST_USERNAME);
+        this.astPassword = props.get(AsteriskAmiConnectorConfig.AST_PASSWORD);
+        this.astEvent = props.get(AsteriskAmiConnectorConfig.AST_EVENTS);
+        this.batchSize = Integer.valueOf(props.get(AsteriskAmiConnectorConfig.BATCH_SIZE));
         this.managerConnection = getManagerConnection(astIpAddress, astUsername, astPassword);
         this.queueRecords = new ConcurrentLinkedQueue<>();
 
@@ -52,7 +53,7 @@ public class AsteriskAmiSourceTask extends SourceTask {
 
     private void managerLogin() {
         try {
-            this.managerConnection.login("on");
+            this.managerConnection.login(astEvent);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (AuthenticationFailedException e) {

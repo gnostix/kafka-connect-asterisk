@@ -1,14 +1,13 @@
 package gr.gnostix.kafka.connect.asterisk.source;
 
+import gr.gnostix.kafka.connect.asterisk.config.AsteriskAmiConnectorConfig;
 import org.apache.kafka.common.config.ConfigDef;
 import org.apache.kafka.connect.connector.Task;
 import org.apache.kafka.connect.source.SourceConnector;
-import org.asteriskjava.manager.ManagerConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,31 +16,10 @@ import java.util.Map;
  */
 public class AsteriskAmiSourceConnector extends SourceConnector {
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceConnector.class);
-    public static String TOPIC_NAME = "asterisk.topic";
-    public static String AST_IP_ADDRESS = "asterisk.ipaddress";
-    public static String AST_USERNAME = "asterisk.username";
-    public static String AST_PASSWORD = "asterisk.password";
-    public static String AST_EVENTS = "asterisk.events";
-    public static String BATCH_SIZE = "batch.size";
 
-    private static final ConfigDef CONFIG_DEF = new ConfigDef()
-            .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server ip address")
-            .define(AST_USERNAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI username")
-            .define(AST_PASSWORD, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI password")
-            .define(AST_EVENTS, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Asterisk server AMI event to source")
-            .define(TOPIC_NAME, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka topic to push the data")
-            .define(BATCH_SIZE, ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka batch size to push to topic");
-    private String topic;
-    private String astIpAddress;
-    private String astUsername;
-    private String astPassword;
-    private String astEvent;
-    private String batchSize;
-    private ManagerConnection managerConnection;
+    private Map<String, String> configProperties;
+    private AsteriskAmiConnectorConfig config;
 
-    static void forceIpV4(String astIpAddress) {
-
-    }
 
 
     @Override
@@ -51,13 +29,8 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
 
     @Override
     public void start(Map<String, String> props) {
-        topic = props.get(TOPIC_NAME);
-        astIpAddress = props.get(AST_IP_ADDRESS);
-        astUsername = props.get(AST_USERNAME);
-//        astUsername = forceIpV4(props.get(AST_USERNAME));
-        astPassword = props.get(AST_PASSWORD);
-        astEvent = props.get(AST_PASSWORD);
-        batchSize = props.get(BATCH_SIZE);
+        configProperties = props;
+        config = new AsteriskAmiConnectorConfig(configProperties);
     }
 
     @Override
@@ -69,17 +42,7 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
     public List<Map<String, String>> taskConfigs(int maxTasks) {
         ArrayList<Map<String, String>> configs = new ArrayList<>();
 
-        Map<String, String> config = new HashMap<>();
-        config.put(TOPIC_NAME, topic);
-        config.put(AST_IP_ADDRESS, astIpAddress);
-        config.put(AST_USERNAME, astUsername);
-        config.put(AST_PASSWORD, astPassword);
-        config.put(AST_EVENTS, astEvent);
-
-        validateNumber(batchSize);
-        config.put(BATCH_SIZE, batchSize);
-
-        configs.add(config);
+        configs.add(configProperties);
 
         return configs;
     }
@@ -89,17 +52,8 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
 
     }
 
-    private boolean validateNumber(String number) {
-        try {
-            Integer.parseInt(number);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     @Override
     public ConfigDef config() {
-        return CONFIG_DEF;
+        return AsteriskAmiConnectorConfig.CONFIG_DEF;
     }
 }
