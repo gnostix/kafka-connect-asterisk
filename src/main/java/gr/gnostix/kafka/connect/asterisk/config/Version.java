@@ -1,8 +1,5 @@
 package gr.gnostix.kafka.connect.asterisk.config;
 
-/**
- * Created by gnostix on 18/5/2018.
- */
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

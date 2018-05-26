@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class AsteriskAmiCdrEventsProducer implements ManagerEventListener {
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceConnector.class);
-    private ConcurrentLinkedQueue<SourceRecord> queueRecords;
-    private String topic;
+    private final ConcurrentLinkedQueue<SourceRecord> queueRecords;
+    private final String topic;
 
     public AsteriskAmiCdrEventsProducer(ConcurrentLinkedQueue<SourceRecord> queueRecords, String topic) {
         this.queueRecords = queueRecords;
@@ -22,8 +22,8 @@ public class AsteriskAmiCdrEventsProducer implements ManagerEventListener {
     }
 
     public void onManagerEvent(ManagerEvent event) {
-        SourceRecord record = new SourceRecord(null, null, topic, null, null, null,
-                null, event.toString(), System.currentTimeMillis());
+        SourceRecord record = new SourceRecord(null, null, topic,
+                null, null, null, null, event.toString(), System.currentTimeMillis());
         queueRecords.add(record);
 
         // just print received events

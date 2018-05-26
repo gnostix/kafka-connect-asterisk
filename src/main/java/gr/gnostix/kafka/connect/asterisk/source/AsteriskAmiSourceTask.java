@@ -19,14 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class AsteriskAmiSourceTask extends SourceTask {
     private static final Logger logger = LoggerFactory.getLogger(AsteriskAmiSourceTask.class);
-    ConcurrentLinkedQueue<SourceRecord> queueRecords;
+    private ConcurrentLinkedQueue<SourceRecord> queueRecords;
     private ManagerConnection managerConnection;
-    private String topic;
-    private String astIpAddress;
-    private String astUsername;
-    private String astPassword;
-    private String astEvent;
-    private ManagerEventListener eventListener;
     private int batchSize;
 
     @Override
@@ -36,23 +30,24 @@ public class AsteriskAmiSourceTask extends SourceTask {
 
     @Override
     public void start(Map<String, String> props) {
-        this.topic = props.get(AsteriskAmiConnectorConfig.TOPIC_NAME);
-        this.astIpAddress = props.get(AsteriskAmiConnectorConfig.AST_IP_ADDRESS);
-        this.astUsername = props.get(AsteriskAmiConnectorConfig.AST_USERNAME);
-        this.astPassword = props.get(AsteriskAmiConnectorConfig.AST_PASSWORD);
-        this.astEvent = props.get(AsteriskAmiConnectorConfig.AST_EVENTS);
+        String topic = props.get(AsteriskAmiConnectorConfig.TOPIC_NAME);
+        String astIpAddress = props.get(AsteriskAmiConnectorConfig.AST_IP_ADDRESS);
+        int astPort = Integer.valueOf(props.get(AsteriskAmiConnectorConfig.AST_IP_PORT));
+        String astUsername = props.get(AsteriskAmiConnectorConfig.AST_USERNAME);
+        String astPassword = props.get(AsteriskAmiConnectorConfig.AST_PASSWORD);
+        String astEvent = props.get(AsteriskAmiConnectorConfig.AST_EVENTS);
         this.batchSize = Integer.valueOf(props.get(AsteriskAmiConnectorConfig.BATCH_SIZE));
-        this.managerConnection = getManagerConnection(astIpAddress, astUsername, astPassword);
+        this.managerConnection = getManagerConnection(astIpAddress, astPort, astUsername, astPassword);
         this.queueRecords = new ConcurrentLinkedQueue<>();
 
-        this.eventListener = new AsteriskAmiCdrEventsProducer(queueRecords, topic);
+        ManagerEventListener eventListener = new AsteriskAmiCdrEventsProducer(queueRecords, topic);
         this.managerConnection.addEventListener(eventListener);
 
-        managerLogin();
+        managerLogin(astEvent);
 
     }
 
-    private void managerLogin() {
+    private void managerLogin(String astEvent) {
         try {
             this.managerConnection.login(astEvent);
         } catch (IOException e) {
@@ -65,11 +60,11 @@ public class AsteriskAmiSourceTask extends SourceTask {
     }
 
 
-    public List<SourceRecord> poll() throws InterruptedException {
+    public List<SourceRecord> poll() {
         if (queueRecords.size() > 0)
             return getRecords();
 
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -78,15 +73,16 @@ public class AsteriskAmiSourceTask extends SourceTask {
     }
 
     private ManagerConnection getManagerConnection(String ipAddress,
+                                                   int port,
                                                    String username,
                                                    String password) {
-        ManagerConnectionFactory factory = new ManagerConnectionFactory(ipAddress, username, password);
+        ManagerConnectionFactory factory = new ManagerConnectionFactory(ipAddress, port, username, password);
         this.managerConnection = factory.createManagerConnection();
 
         return this.managerConnection;
     }
 
-    public List<SourceRecord> getRecords() {
+    private List<SourceRecord> getRecords() {
         ArrayList<SourceRecord> records = new ArrayList<>();
         for (int i = 0; i <= batchSize; i++) {
             records.add(queueRecords.poll());

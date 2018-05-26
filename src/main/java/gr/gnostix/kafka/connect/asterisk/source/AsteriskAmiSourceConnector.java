@@ -22,7 +22,6 @@ public class AsteriskAmiSourceConnector extends SourceConnector {
     private AsteriskAmiConnectorConfig config;
 
 
-
     @Override
     public String version() {
         return Version.getVersion();
