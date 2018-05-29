@@ -26,7 +26,7 @@ public class AsteriskAmiConnectorConfig extends AbstractConfig {
     public static final String BATCH_SIZE = "batch.size";
 
     private static final String DEFAULT_TOPIC_NAME = "asterisk";
-    private static final String DEFAULT_AST_IP_ADDRESS = "127.0.0.1";
+    private static final String DEFAULT_AST_HOST = "127.0.0.1";
     private static final int DEFAULT_AST_PORT = 5038;
     private static final String DEFAULT_AST_USERNAME = "kafka-connect";
     private static final String DEFAULT_AST_PASSWORD = "mysecret";
@@ -35,7 +35,7 @@ public class AsteriskAmiConnectorConfig extends AbstractConfig {
 
     private static ConfigDef baseConfigDef() {
         return new ConfigDef()
-                .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, DEFAULT_AST_IP_ADDRESS, ConfigDef.Importance.HIGH, "Asterisk server ip address")
+                .define(AST_IP_ADDRESS, ConfigDef.Type.STRING, DEFAULT_AST_HOST, ConfigDef.Importance.HIGH, "Asterisk server ip address")
                 .define(AST_IP_PORT, ConfigDef.Type.INT, DEFAULT_AST_PORT, ConfigDef.Importance.LOW, "Asterisk server port or get the default 5038")
                 .define(AST_USERNAME, ConfigDef.Type.STRING, DEFAULT_AST_USERNAME, ConfigDef.Importance.HIGH, "Asterisk server AMI username")
                 .define(AST_PASSWORD, ConfigDef.Type.STRING, DEFAULT_AST_PASSWORD, ConfigDef.Importance.HIGH, "Asterisk server AMI password")
@@ -46,9 +46,6 @@ public class AsteriskAmiConnectorConfig extends AbstractConfig {
 
     public static final ConfigDef CONFIG_DEF = baseConfigDef();
 
-    static void forceIpV4(String astIpAddress) {
-
-    }
 
     public boolean validateNumber(String number) {
         try {

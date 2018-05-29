@@ -6,7 +6,7 @@
 
     <groupId>gr.gnostix</groupId>
     <artifactId>kafka-connect-asterisk</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
@@ -51,6 +51,15 @@
             <artifactId>connect-api</artifactId>
             <version>1.1.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.easymock/easymock -->
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.6</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>
